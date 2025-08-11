@@ -3,8 +3,9 @@ import { serverConfig, developmentConfig } from './config/database';
 import { corsMiddleware } from './middlewares/cors.middleware';
 import { swaggerConfig } from './config/swagger';
 import { apiRoutes } from './routes';
-import { DatabaseService } from './services/database.service';
 import { EnvValidator } from './utils/env.utils';
+// import { DatabaseService } from './services/database.service';
+
 
 async function startServer() {
   try {
@@ -70,16 +71,16 @@ async function startServer() {
       `);
 
     // Graceful shutdown handling
-    process.on('SIGINT', async () => {
-      console.log('\n🛑 Shutting down server...');
-      try {
-        await db.disconnect();
-        process.exit(0);
-      } catch (error) {
-        console.error('Error during shutdown:', error);
-        process.exit(1);
-      }
-    });
+    // process.on('SIGINT', async () => {
+    //   console.log('\n🛑 Shutting down server...');
+    //   try {
+    //     await db.disconnect();
+    //     process.exit(0);
+    //   } catch (error) {
+    //     console.error('Error during shutdown:', error);
+    //     process.exit(1);
+    //   }
+    // });
 
     return app;
   } catch (error) {
