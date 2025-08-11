@@ -65,13 +65,13 @@ const getConnectionConfig = () => {
 
 // Create database connection
 const connection = getConnectionConfig();
-const db = pgp(connection);
+const dbPos  = pgp(connection);
 
 
 // Helper functions for testing and utilities
 export const testConnection = async (): Promise<boolean> => {
   try {
-    await db.one('SELECT 1 as test');
+    await dbPos.one('SELECT 1 as test');
     console.log('✅ Database connection test successful');
     return true;
   } catch (error) {
@@ -82,7 +82,7 @@ export const testConnection = async (): Promise<boolean> => {
 
 export const closeConnection = async (): Promise<void> => {
   try {
-    await db.$pool.end();
+    await dbPos.$pool.end();
     console.log('✅ Database connection closed');
   } catch (error) {
     console.error('❌ Error closing database connection:', error);
@@ -93,9 +93,9 @@ export const closeConnection = async (): Promise<void> => {
 export const getPoolStats = () => {
   try {
     return {
-      totalCount: db.$pool.totalCount,
-      idleCount: db.$pool.idleCount,
-      waitingCount: db.$pool.waitingCount
+      totalCount: dbPos.$pool.totalCount,
+      idleCount: dbPos.$pool.idleCount,
+      waitingCount: dbPos.$pool.waitingCount
     };
   } catch (error) {
     return null;
@@ -103,7 +103,7 @@ export const getPoolStats = () => {
 };
 
 // Export pg-promise instance and database connection
-export { pgp, db };
+export { pgp, dbPos };
 
 // Export default database instance
-export default db;
+export default dbPos;

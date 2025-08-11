@@ -16,7 +16,6 @@ export const saleController = new Elysia({
       // if (!branch_code) {
       //   return ResponseHelper.error("Branch code is required");
       // }
-
       // sale list
       const result = await db.manyOrNone(
         "SELECT s.* FROM public.sales AS s where s.branch_code = $1 order by s.saleid desc limit 10",

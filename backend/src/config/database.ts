@@ -20,6 +20,28 @@ export const databaseConfig = {
     allowExitOnIdle: process.env.DB_ALLOW_EXIT_ON_IDLE === 'true' || true
   }
 };
+export const databaseConfigPos = {
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  username: process.env.DB_USERNAME || 'postgres',
+  password: process.env.DB_PASSWORD || 'password',
+  database: process.env.DB_NAME || 'mydb',
+  ssl: process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production' 
+    ? { rejectUnauthorized: false } 
+    : false,
+  synchronize: process.env.NODE_ENV !== 'production',
+  logging: process.env.NODE_ENV === 'development' || process.env.DEBUG === 'true',
+  url: process.env.DATABASE_URL, // Alternative connection string format
+  
+  // pg-promise specific configurations
+  poolConfig: {
+    max: parseInt(process.env.DB_POOL_MAX || '20'), // Maximum number of connections
+    min: parseInt(process.env.DB_POOL_MIN || '2'),  // Minimum number of connections
+    idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000'), // 30 seconds
+    connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT || '2000'), // 2 seconds
+    allowExitOnIdle: process.env.DB_ALLOW_EXIT_ON_IDLE === 'true' || true
+  }
+};
 
 export const jwtConfig = {
   secret: process.env.JWT_SECRET || 'your-secret-key',
