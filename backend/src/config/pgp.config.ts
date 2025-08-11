@@ -3,6 +3,9 @@ import { databaseConfig } from './database';
 
 // Initialize pg-promise with custom configuration
 const initOptions: pgPromise.IInitOptions = {
+  schema: 'public', // can also be an array of strings or a callback
+  // capSQL: true จะทำให้ pg-promise สร้าง SQL statement ที่มีตัวอักษรใหญ่ทั้งหมด (เช่น SELECT, FROM, WHERE) เพื่อความสอดคล้องและอ่านง่าย
+  capSQL: true, // capitalize all generated SQL
   // Global event logging
   query(e) {
     if (process.env.NODE_ENV === 'development' || process.env.DEBUG === 'true') {
@@ -28,9 +31,7 @@ const initOptions: pgPromise.IInitOptions = {
   disconnect(e) {
     const cp = e.client.connectionParameters;
     console.log(`Disconnected from database: ${cp.database} (${cp.host}:${cp.port})`);
-  },
-  // Prevent duplicate connections
-  capSQL: true
+  }
 };
 
 // Create pg-promise instance
@@ -62,79 +63,46 @@ const getConnectionConfig = () => {
   };
 };
 
-// Create database instance with singleton pattern to prevent duplicate connections
-class DatabaseConnection {
-  private static instance: pgPromise.IDatabase<{}> | null = null;
-  private static isConnecting = false;
+// Create database connection
+const connection = getConnectionConfig();
+const db = pgp(connection);
 
-  static getInstance(): pgPromise.IDatabase<{}> {
-    if (!DatabaseConnection.instance && !DatabaseConnection.isConnecting) {
-      DatabaseConnection.isConnecting = true;
-      try {
-        const config = getConnectionConfig();
-        DatabaseConnection.instance = pgp(config);
-        console.log('✅ Database connection established');
-      } catch (error) {
-        console.error('❌ Failed to create database connection:', error);
-        throw error;
-      } finally {
-        DatabaseConnection.isConnecting = false;
-      }
-    }
-    
-    if (!DatabaseConnection.instance) {
-      throw new Error('Database connection not available');
-    }
-    
-    return DatabaseConnection.instance;
+// Helper functions for testing and utilities
+export const testConnection = async (): Promise<boolean> => {
+  try {
+    await db.one('SELECT 1 as test');
+    console.log('✅ Database connection test successful');
+    return true;
+  } catch (error) {
+    console.error('❌ Database connection test failed:', error);
+    return false;
   }
+};
 
-  // Method to test connection
-  static async testConnection(): Promise<boolean> {
-    try {
-      const db = DatabaseConnection.getInstance();
-      await db.one('SELECT 1 as test');
-      console.log('✅ Database connection test successful');
-      return true;
-    } catch (error) {
-      console.error('❌ Database connection test failed:', error);
-      return false;
-    }
+export const closeConnection = async (): Promise<void> => {
+  try {
+    await db.$pool.end();
+    console.log('✅ Database connection closed');
+  } catch (error) {
+    console.error('❌ Error closing database connection:', error);
+    throw error;
   }
+};
 
-  // Method to close connection (use with caution)
-  static async closeConnection(): Promise<void> {
-    if (DatabaseConnection.instance) {
-      try {
-        await DatabaseConnection.instance.$pool.end();
-        DatabaseConnection.instance = null;
-        console.log('✅ Database connection closed');
-      } catch (error) {
-        console.error('❌ Error closing database connection:', error);
-        throw error;
-      }
-    }
-  }
-
-  // Get connection pool statistics
-  static getPoolStats() {
-    if (DatabaseConnection.instance) {
-      return {
-        totalCount: DatabaseConnection.instance.$pool.totalCount,
-        idleCount: DatabaseConnection.instance.$pool.idleCount,
-        waitingCount: DatabaseConnection.instance.$pool.waitingCount
-      };
-    }
+export const getPoolStats = () => {
+  try {
+    return {
+      totalCount: db.$pool.totalCount,
+      idleCount: db.$pool.idleCount,
+      waitingCount: db.$pool.waitingCount
+    };
+  } catch (error) {
     return null;
   }
-}
+};
 
-// Export the database instance and utilities
-export const db = DatabaseConnection.getInstance;
-export const testConnection = DatabaseConnection.testConnection;
-export const closeConnection = DatabaseConnection.closeConnection;
-export const getPoolStats = DatabaseConnection.getPoolStats;
-export { pgp };
+// Export pg-promise instance and database connection
+export { pgp, db };
 
 // Export default database instance
-export default DatabaseConnection.getInstance();
+export default db;
