@@ -4,12 +4,14 @@ const app = new Elysia()
   .post(
     "/",
     ({ body, headers, query, params }) => {
+
+      
       console.log(body);
       console.log(headers);
       console.log(query);
       console.log(params);
 
-      
+
       const a = {
         hello: "world",
       };
