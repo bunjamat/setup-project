@@ -1,7 +1,5 @@
 import { Elysia } from 'elysia';
-import { staticPlugin } from '@elysiajs/static';
 import { serverConfig, developmentConfig } from './config/database';
-import { loggingMiddleware } from './middlewares/logging.middleware';
 import { corsMiddleware } from './middlewares/cors.middleware';
 import { swaggerConfig } from './config/swagger';
 import { apiRoutes } from './routes';
@@ -19,9 +17,9 @@ async function startServer() {
       process.exit(1);
     }
 
-    // Initialize database connection
-    const db = DatabaseService.getInstance();
-    await db.connect();
+    // // Initialize database connection
+    // const db = DatabaseService.getInstance();
+    // await db.connect();
 
     // Create Elysia app with middlewares and routes
     const app = new Elysia()
