@@ -30,7 +30,7 @@ export const serverConfig = {
   port: parseInt(process.env.PORT || '3000'),
   host: process.env.HOST || 'localhost',
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    origin: process.env.FRONTEND_URL || 'http://localhost:3034',
     credentials: true,
   },
   environment: process.env.NODE_ENV || 'development',

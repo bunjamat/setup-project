@@ -14,7 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
-import { useGetSubjects, activateSubject, deactivateSubject } from 'src/actions/subject';
+import { useGetSubjects, activateSubject, deactivateSubject, deleteSubject } from 'src/actions/subject';
 
 import { Label } from 'src/components/label';
 
@@ -139,24 +139,46 @@ export function SubjectListView() {
   const notFound = (!tableData.length && canReset) || (!tableData.length && !subjectsLoading);
 
   const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      toast.success('Subject deleted successfully!');
-      setTableData(deleteRow);
-      table.onUpdatePageDeleteRow(dataInPage.length);
+    async (id) => {
+      try {
+        const result = await deleteSubject(id);
+        
+        if (result?.success !== false) {
+          toast.success('Subject deleted successfully!');
+          // SWR will automatically refetch data after cache invalidation
+          // No need to manually update local state
+        } else {
+          toast.error(result?.message || 'Failed to delete subject');
+        }
+      } catch (error) {
+        console.error('Delete subject error:', error);
+        toast.error('An error occurred while deleting subject');
+      }
     },
-    [dataInPage.length, table, tableData]
+    []
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    toast.success('Subjects deleted successfully!');
-    setTableData(deleteRows);
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  const handleDeleteRows = useCallback(async () => {
+    try {
+      // Delete all selected subjects
+      const deletePromises = table.selected.map(id => deleteSubject(id));
+      const results = await Promise.allSettled(deletePromises);
+      
+      // Check if all deletions were successful
+      const failures = results.filter(result => result.status === 'rejected' || !result.value?.success);
+      
+      if (failures.length === 0) {
+        toast.success(`Successfully deleted ${table.selected.length} subject(s)!`);
+        table.onSelectAllRows(false, []); // Clear selection
+        // SWR will automatically refetch data after cache invalidation
+      } else {
+        toast.error(`Failed to delete ${failures.length} subject(s)`);
+      }
+    } catch (error) {
+      console.error('Delete subjects error:', error);
+      toast.error('An error occurred while deleting subjects');
+    }
+  }, [table]);
 
 
 

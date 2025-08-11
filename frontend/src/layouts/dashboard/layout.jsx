@@ -32,6 +32,9 @@ import { getNavDataByRole } from '../nav-config-dashboard';
 import { dashboardLayoutVars, dashboardNavColorVars } from './css-vars';
 import { NotificationsDrawer } from '../components/notifications-drawer';
 import { MainSection, layoutClasses, HeaderSection, LayoutSection } from '../core';
+import { LicenseInfo } from '@mui/x-license';
+
+LicenseInfo.setLicenseKey(process.env.NEXT_PUBLIC_MUI_X_LICENSE_KEY || '');
 
 // ----------------------------------------------------------------------
 

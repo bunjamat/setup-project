@@ -2,7 +2,7 @@ import { useMemo, Fragment } from 'react';
 import { isExternalLink } from 'minimal-shared/utils';
 
 import Link from '@mui/material/Link';
-import { GridActionsCellItem } from '@mui/x-data-grid';
+import { GridActionsCellItem } from '@mui/x-data-grid-premium';
 import { menuItemClasses } from '@mui/material/MenuItem';
 
 import { RouterLink } from 'src/routes/components';

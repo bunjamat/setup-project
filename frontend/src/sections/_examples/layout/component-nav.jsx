@@ -1,11 +1,13 @@
 import { isEqualPath, mergeClasses } from 'minimal-shared/utils';
 
 import { styled } from '@mui/material/styles';
+import ListSubheader from '@mui/material/ListSubheader';
 
 import { usePathname } from 'src/routes/hooks';
 
+import { NavSearch } from './component-search';
 import { NavItem } from './component-nav-item';
-import { componentLayoutClasses } from '../layout/classes';
+import { componentLayoutClasses } from './classes';
 
 // ----------------------------------------------------------------------
 
@@ -45,6 +47,8 @@ export function PrimaryNav({ sx, navData, className, ...other }) {
       sx={sx}
       {...other}
     >
+      <NavSearch navData={navData} sx={{ mb: 4 }} />
+
       <NavSection>
         <NavUl
           sx={[
@@ -56,7 +60,9 @@ export function PrimaryNav({ sx, navData, className, ...other }) {
             }),
           ]}
         >
-          <PrimaryNavList items={navData ?? []} />
+          {navData?.map((section) => (
+            <PrimaryNavList key={section.title} subheader={section.title} items={section.items} />
+          ))}
         </NavUl>
       </NavSection>
     </NavRoot>
@@ -65,7 +71,7 @@ export function PrimaryNav({ sx, navData, className, ...other }) {
 
 // ----------------------------------------------------------------------
 
-function PrimaryNavList({ items }) {
+function PrimaryNavList({ subheader, items }) {
   const pathname = usePathname();
 
   const borderStyles = {
@@ -82,6 +88,23 @@ function PrimaryNavList({ items }) {
 
   return (
     <NavLi>
+      <ListSubheader
+        component="h6"
+        sx={{
+          px: 0,
+          pb: 0.5,
+          mt: 0,
+          mx: 0,
+          mb: 0.5,
+          width: 1,
+          color: 'text.primary',
+          typography: 'overline',
+          bgcolor: 'background.default',
+        }}
+      >
+        {subheader}
+      </ListSubheader>
+
       <NavUl
         sx={{
           pl: '21px',
@@ -97,7 +120,7 @@ function PrimaryNavList({ items }) {
               isActive={isEqualPath(item.href, pathname)}
               autoFocus={isEqualPath(item.href, pathname)}
             >
-              {item.name}
+              {item.name} {item.packageType === 'MUI X' && <>(MUI X)</>}
             </NavItem>
           </NavLi>
         ))}

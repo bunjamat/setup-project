@@ -3,11 +3,13 @@ import { authController } from "../controllers/auth.controller";
 import { userController } from "../controllers/user.controller";
 import { db, testConnection, getPoolStats } from "../config/pgp.config";
 import { saleController } from "../controllers/sale.controller";
+import { subjectController } from "../controllers/subject.controller";
 
 export const apiRoutes = new Elysia({ prefix: "/api" })
   // .use(authController)
 //   .use(userController)
   .use(saleController)
+  .use(subjectController)
   .get("/health", async () => {
     // test database connection
     const isConnected = await testConnection();

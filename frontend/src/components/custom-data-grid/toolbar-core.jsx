@@ -19,7 +19,7 @@ import {
   FilterPanelTrigger,
   QuickFilterControl,
   ColumnsPanelTrigger,
-} from '@mui/x-data-grid';
+} from '@mui/x-data-grid-premium';
 
 import { ExportIcon, FilterIcon, ViewColumnsIcon } from 'src/theme/core/components/mui-x-data-grid';
 

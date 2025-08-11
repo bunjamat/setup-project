@@ -170,7 +170,7 @@ const LayoutSection = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   gap: 'var(--section-gap)',
   padding: 'var(--section-padding)',
-  borderRadius: theme.shape.borderRadius * 2,
+  borderRadius: Number(theme.shape.borderRadius) * 2,
   backgroundColor: theme.vars.palette.background.neutral,
 }));
 
@@ -178,11 +178,8 @@ const LayoutHero = styled('section')(({ theme }) => {
   const backgroundStyles = {
     ...theme.mixins.bgGradient({
       images: [
-        `linear-gradient(0deg, ${varAlpha(
-          theme.vars.palette.background.defaultChannel,
-          0.9
-        )}, ${varAlpha(theme.vars.palette.background.defaultChannel, 0.9)})`,
-        `url(${CONFIG.assetsDir}/assets/background/overlay-1.webp)`,
+        `linear-gradient(0deg, ${varAlpha(theme.vars.palette.background.defaultChannel, 0.9)}, ${varAlpha(theme.vars.palette.background.defaultChannel, 0.9)})`,
+        `url(${CONFIG.assetsDir}/assets/background/background-3-blur.webp)`,
       ],
     }),
     top: 0,
@@ -192,6 +189,7 @@ const LayoutHero = styled('section')(({ theme }) => {
     width: '100%',
     height: '100%',
     position: 'absolute',
+    transform: 'scaleX(-1)',
   };
 
   return {
